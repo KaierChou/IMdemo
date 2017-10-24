@@ -1,0 +1,815 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>Hello APP</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css" />
+		<style>
+			section {
+				position: relative;
+				/*top: 80px;*/
+				margin: 8px;
+				background-color: #fff;
+			}
+			h2 {
+				position: relative;
+				height: 44px;
+				line-height: 44px;
+				color: #888;
+			}
+			div {
+				position: relative;
+				height: 56px;
+				margin: 8px;
+				text-align: center;
+				font-size: 12px;
+				line-height: 56px;
+				color: #fff;
+				background-color: #354399;
+				background-clip: padding;
+				box-shadow: 0 0 1px 1px #ccc;
+				border-radius: 2px;
+			}
+			.active {
+				opacity: 0.7;
+			}
+		</style>
+	</head>
+	<body>
+		<section>
+			<h3>此Demo为环信在APICloud上的模块Demo，仅包含功能接口。欲了解如何使用该模块开发App，请访问<a href="http://docs.apicloud.com/Client-API/Open-SDK/easeChat">环信模块文档</a></h3>
+			<div tapmode="active" onclick="fnEaseRegister()">
+				注册
+			</div>
+			<div tapmode="active" onclick="fnLogin()">
+				登录接口
+			</div>
+			<div tapmode="active" onclick="fnIsAutoLogin()">
+				是否设置了自动登录（仅支持ios）
+			</div>
+			<div tapmode="active" onclick="fnLogout()">
+				退出登录
+			</div>
+			<div tapmode="active" onclick="fnAddConnectionListener()">
+				连接服务器的状态变化事件的监听
+			</div>
+			<div tapmode="active" onclick="fnAddAutoLoginListener()">
+				自动登录完成时的回调事件监听（仅支持ios）
+			</div>
+			<div tapmode="active" onclick="fnAddAccountListener()">
+				账号异常事件的监听
+			</div>
+			<div tapmode="active" onclick="fnCreateGroup()">
+				创建群组
+			</div>
+			<div tapmode="active" onclick="fnGetGroupInfo()">
+				获取制定 id 的群组信息
+			</div>
+			<div tapmode="active" onclick="fnAddContact()">
+				添加好友
+			</div>
+			<div tapmode="active" onclick="fnApproveFriendRequest()">
+				同意加好友的申请
+			</div>
+			<div tapmode="active" onclick="fnDeclineFriendRequest()">
+				拒绝加好友的申请
+			</div>
+			<div tapmode="active" onclick="fnDeleteContact()">
+				删除好友
+			</div>
+			<div tapmode="active" onclick="fnGetContacts()">
+				获取好友列表（仅支持ios）
+			</div>
+			<div tapmode="active" onclick="fnGetConversation()">
+				新建（仅支持ios）/获取一个会话
+			</div>
+			<div tapmode="active" onclick="fnDeleteConversation()">
+				删除会话
+			</div>
+			<div tapmode="active" onclick="fnDeleteConversations()">
+				删除一组会话
+			</div>
+			<div tapmode="active" onclick="fnGetAllConversations()">
+				获取所有会话，如果内存中不存在会从DB中加载
+			</div>
+			<div tapmode="active" onclick="fnLoadMessageWithId()">
+				根据会话id 及其类型，获取指定消息 ID 的消息
+			</div>
+			<div tapmode="active" onclick="fnLastReceivedMessage()">
+				根据会话id 及其类型，获取收到的对方发送的最后一条消息（仅支持ios）
+			</div>
+			<div tapmode="active" onclick="fnSendText()">
+				发送文本消息
+			</div>
+			<div tapmode="active" onclick="fnSendImage()">
+				发送图片消息
+			</div>
+			<div tapmode="active" onclick="fnSendLocation()">
+				发送位置消息
+			</div>
+			<div tapmode="active" onclick="fnSendVoice()">
+				发送声音消息
+			</div>
+			<div tapmode="active" onclick="fnSendVideo()">
+				发送视频消息
+			</div>
+			<div tapmode="active" onclick="fnSendFile()">
+				发送文件消息
+			</div>
+			<div tapmode="active" onclick="fnSendCmd()">
+				发送命令消息
+			</div>
+			<div tapmode="active" onclick="fnDownloadMessageThumbnail()">
+				下载缩略图
+			</div>
+			<div tapmode="active" onclick="fnDownloadMessageAttachments()">
+				下载消息附件
+			</div>
+			<div tapmode="active" onclick="fnSendMessageReadAck()">
+				发送消息已读回执
+			</div>
+			<div tapmode="active" onclick="fnAddMessageListener()">
+				添加消息相关事件监听
+			</div>
+			<div tapmode="active" onclick="fnRemoveMessageListener()">
+				移除消息相关事件监听
+			</div>
+		</section>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript">
+		var username = '12345678';
+		var from = '12345678';
+		var to = '123456789';
+		var vIsIOS=false;
+		apiready = function() {
+
+			if (api.systemType == 'ios') {
+				username = '123456789';
+				from = '123456789';
+				to = '12345678';
+				vIsIOS=true;
+				fnAddAutoLoginListener();
+			}
+			api.download({
+				url : 'http://7xtw34.com1.z0.glb.clouddn.com/apicloud/10040e7d961b4d5f019916593d9e11da.jpg',
+				savePath : 'fs://test.jpg'
+			}, function(ret, err) {
+				//coding...
+				if (ret.state == 1) {
+					console.log('下载完成');
+				}
+			});
+			api.download({
+				url : 'http://7xtw34.com1.z0.glb.clouddn.com/apicloud/591bde468d4e44b21cc225b7b6e1129a.mp3',
+				savePath : 'fs://test.mp3'
+			}, function(ret, err) {
+				//coding...
+				if (ret.state == 1) {
+					console.log('下载完成');
+				}
+			});
+			api.download({
+				url : 'http://7yjgua.com1.z0.glb.clouddn.com/apicloud/16276aa54e4593b34325e0c7fcac1dde.zip',
+				savePath : 'fs://test.zip'
+			}, function(ret, err) {
+				//coding...
+				if (ret.state == 1) {
+					console.log('文件下载完成');
+				}
+			});
+			api.download({
+				url : 'http://7yjgua.com1.z0.glb.clouddn.com/apicloud/6ec9a22bb906d36587fd490037abd7f5.mp4',
+				savePath : 'fs://test.mp4'
+			}, function(ret, err) {
+				//coding...
+				if (ret.state == 1) {
+					console.log('下载完成');
+				}
+			});
+		}
+		function fnEaseRegister() {
+			var easeChat = api.require('easeChat');
+			easeChat.easeRegister({
+				username : username,
+				password : '123456'
+			}, function(ret, err) {
+				if (ret.status) {
+					api.alert({
+						msg : '注册成功'
+					});
+				} else {
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+				}
+			});
+		};
+		function fnLogin() {
+			var easeChat = api.require('easeChat');
+			console.log(username);
+			easeChat.login({
+				username : username,
+				password : '123456',
+				autoLogin : true
+			}, function(ret, err) {
+				if (ret.status) {
+					api.alert({
+						msg : '登录成功'
+					});
+				} else {
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+				}
+			});
+		};
+		function fnIsAutoLogin() {
+			if(!vIsIOS){
+					api.alert({
+					    title: '系统提示',
+					    msg: '非iOS系统不支持此命令！',
+					}, function(ret, err){
+					    return;
+					});
+					return;
+			}
+			var easeChat = api.require('easeChat');
+			easeChat.isAutoLogin(function(ret, err) {
+				if (ret.status) {
+					alert('已开启自动登录');
+				} else {
+					alert('未开启自动登录');
+				}
+			});
+		};
+		function fnLogout() {
+			var easeChat = api.require('easeChat');
+			easeChat.logout(function(ret, err) {
+				if (ret.status) {
+					api.alert({
+						msg : '退出登录成功'
+					});
+				} else {
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+				}
+			});
+		};
+		function fnAddConnectionListener() {
+			var easeChat = api.require('easeChat');
+			easeChat.addConnectionListener(function(ret) {
+				alert(JSON.stringify(ret));
+			});
+		};
+		function fnAddAutoLoginListener() {
+			if(!vIsIOS){
+					api.alert({
+					    title: '系统提示',
+					    msg: '非iOS系统不支持此命令！',
+					}, function(ret, err){
+					    return;
+					});
+					return;
+			}
+			var easeChat = api.require('easeChat');
+			easeChat.addAutoLoginListener(function(ret) {
+					if (ret&&ret.complete) {
+						api.alert({
+							msg : '自动登录成功'
+						});
+					} else {
+						api.alert({
+							msg : JSON.stringify(err)
+						});
+					}
+			});
+		};
+		function fnAddAccountListener() {
+			var easeChat = api.require('easeChat');
+			easeChat.addAccountListener(function(ret) {
+				api.alert({
+					msg : ret.eventType
+				});
+			});
+		};
+		function fnCreateGroup() {
+			var easeChat = api.require('easeChat');
+			easeChat.createGroup({
+				name : 'APICloud',
+				description : 'APICloud大牛群',
+				message : '欢迎加入！',
+				userCount : 200,
+				invitees : ['123456'],
+				style : 'public'
+			}, function(ret, err) {
+				if (ret.status) {
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+					id = ret.group.groupId;
+				} else {
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+				}
+			});
+		};
+		function fnGetGroupInfo() {
+			var easeChat = api.require('easeChat');
+			easeChat.getGroupInfo({
+				id : id
+			}, function(ret) {
+				alert(JSON.stringify(ret));
+			})
+		};
+		function fnAddContact() {
+			var easeChat = api.require('easeChat');
+			easeChat.addContact({
+				name : '1234567',
+				message : '1234567欢迎加入！'
+			}, function(ret, err) {
+				if (ret.status) {
+					api.alert({
+						msg : '添加成功'
+					});
+				} else {
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+				}
+			});
+		};
+		function fnApproveFriendRequest() {
+			var easeChat = api.require('easeChat');
+			easeChat.approveFriendRequest({
+				name : '123456'
+			}, function(ret, err) {
+				if (ret.status) {
+					api.alert({
+						msg : '同意成功'
+					});
+				} else {
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+				}
+			});
+		};
+		function fnDeclineFriendRequest() {
+			var easeChat = api.require('easeChat');
+			easeChat.declineFriendRequest({
+				name : '123456'
+			}, function(ret, err) {
+				if (ret.status) {
+					api.alert({
+						msg : '同意成功'
+					});
+				} else {
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+				}
+			});
+		};
+		function fnDeleteContact() {
+			var easeChat = api.require('easeChat');
+			easeChat.deleteContact({
+				name : '123456',
+				isDeleteConversation : true
+			}, function(ret, err) {
+				if (ret.status) {
+					api.alert({
+						msg : '删除成功'
+					});
+				} else {
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+				}
+			});
+		};
+		function fnGetContacts() {
+			var easeChat = api.require('easeChat');
+			easeChat.getContacts({
+				original : 'server'
+			}, function(ret) {
+				api.alert({
+					msg : JSON.stringify(ret)
+				});
+			});
+		};
+		function fnGetConversation() {
+			var easeChat = api.require('easeChat');
+			easeChat.getConversation({
+				conversationId : 'test',
+				type : 'chat',
+				ifCreate : true
+			}, function(ret) {
+				if (ret.status)
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+			});
+		};
+		function fnDeleteConversation() {
+			var easeChat = api.require('easeChat');
+			easeChat.deleteConversation({
+				conversationId : '',
+				isDeleteMessages : true
+			}, function(ret, err) {
+				if (ret.status)
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+				else
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+			});
+		};
+		function fnDeleteConversations() {
+			var easeChat = api.require('easeChat');
+			easeChat.deleteConversations({
+				conversationIds : [],
+				isDeleteMessages : true
+			}, function(ret, err) {
+				if (ret.status)
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+				else
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+			});
+		};
+		function fnGetAllConversations() {
+			var easeChat = api.require('easeChat');
+			easeChat.getAllConversations(function(ret) {
+				api.alert({
+					msg : JSON.stringify(ret)
+				});
+			});
+		};
+		function fnLoadMessageWithId() {
+			var easeChat = api.require('easeChat');
+			easeChat.loadMessageWithId({
+				conversationId : 'test',
+				type : 'chat',
+				messageId : ''
+			}, function(ret, err) {
+				if (ret.status)
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+				else
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+			});
+		};
+		function fnLastReceivedMessage() {
+			if(!vIsIOS){
+					api.alert({
+					    title: '系统提示',
+					    msg: '非iOS系统不支持此命令！',
+					}, function(ret, err){
+					    return;
+					});
+					return;
+			}
+			var easeChat = api.require('easeChat');
+			easeChat.lastReceivedMessage({
+				conversationId : 'test',
+				type : 'chat'
+			}, function(ret, err) {
+				if (ret.status)
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+				else
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+			});
+		};
+		function fnSendText() {
+			var easeChat = api.require('easeChat');
+			easeChat.sendText({
+				conversationId : 'test',
+				chatType : 'chat',
+				text : 'APICloud hello',
+				from : from,
+				to : to,
+				ext : {}
+			}, function(ret, err) {
+				if (ret.status)
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+				else
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+			});
+		};
+		function fnSendImage() {
+			var easeChat = api.require('easeChat');
+			easeChat.sendImage({
+				conversationId : 'test',
+				chatType : 'chat',
+				path : 'fs://test.jpg',
+				displayName : 'cloud',
+				from : from,
+				to : to,
+				ext : {}
+			}, function(ret, err) {
+				if (ret.status) {
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+					messageId = ret.message.body.messageId;
+					console.log(messageId);
+				} else {
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+				}
+			});
+			//			var path;
+			//			api.getPicture({
+			//				sourceType : 'album',
+			//				encodingType : 'jpg',
+			//				mediaValue : 'pic',
+			//				destinationType : 'url'
+			//			}, function(ret, err) {
+			//				if (ret) {
+			//					alert(JSON.stringify(ret));
+			//					path = ret.data;
+			//					var easeChat = api.require('easeChat');
+			//					easeChat.sendImage({
+			//						conversationId : 'anyuwu',
+			//						chatType : 'chat',
+			//						path : path,
+			//						text : 'APICloud hello',
+			//						from : 'anyuwuzml',
+			//						to : 'anyuwu'
+			//					}, function(ret, err) {
+			//						if (ret.status)
+			//							api.alert({
+			//								msg : JSON.stringify(ret)
+			//							});
+			//						else
+			//							api.alert({
+			//								msg : JSON.stringify(err)
+			//							});
+			//					});
+			//				} else {
+			//					alert(JSON.stringify(err));
+			//				}
+			//			});
+		};
+		function fnSendLocation() {
+			var easeChat = api.require('easeChat');
+			easeChat.sendLocation({
+				conversationId : 'test',
+				chatType : 'chat',
+				address : '北京市天安门',
+				latitude : 116.3972282409668,
+				longitude : 39.90960456049752,
+				from : from,
+				to : to,
+				ext : {
+				}
+			}, function(ret, err) {
+				if (ret.status)
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+				else
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+			});
+		};
+		function fnSendVoice() {
+			var easeChat = api.require('easeChat');
+			easeChat.sendVoice({
+				conversationId : 'test',
+				chatType : 'chat',
+				path : 'fs://test.mp3',
+				displayName : 'cloud',
+				length : 30,
+				from : from,
+				to : to,
+				ext : {}
+			}, function(ret, err) {
+				if (ret.status)
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+				else
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+			});
+		};
+		function fnSendVideo() {
+			var easeChat = api.require('easeChat');
+			easeChat.sendVideo({
+				conversationId : 'test',
+				chatType : 'chat',
+				path : 'fs://test.mp4',
+				displayName : 'cloud',
+				length : 44,
+				from : from,
+				to : to,
+				ext : {}
+			}, function(ret, err) {
+				if (ret.status)
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+				else
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+			});
+		};
+		function fnSendFile() {
+			var easeChat = api.require('easeChat');
+			easeChat.sendFile({
+				conversationId : 'test',
+				chatType : 'chat',
+				path : 'fs://test.zip',
+				displayName : 'cloud',
+				from : from,
+				to : to,
+				ext : {}
+			}, function(ret, err) {
+				if (ret.status)
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+				else
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+			});
+		};
+		function fnSendCmd() {
+			var easeChat = api.require('easeChat');
+			easeChat.sendCmd({
+				conversationId : 'test',
+				chatType : 'chat',
+				action : '出发',
+				from : from,
+				to : to,
+				ext : {}
+			}, function(ret, err) {
+				if (ret.status)
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+				else
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+			});
+		};
+		function fnDownloadMessageThumbnail() {
+			var easeChat = api.require('easeChat');
+			easeChat.downloadMessageThumbnail({
+				conversationId : 'test',
+				chatType : 'chat',
+				messageId : messageId
+			}, function(ret, err) {
+				if (ret.status)
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+				else
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+			});
+		};
+		function fnDownloadMessageAttachments() {
+			var easeChat = api.require('easeChat');
+			easeChat.downloadMessageAttachments({
+				conversationId : 'test',
+				chatType : 'chat',
+				messageId : messageId
+			}, function(ret, err) {
+				if (ret.status)
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+				else
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+			});
+		};
+		function fnSendMessageReadAck() {
+			var easeChat = api.require('easeChat');
+			easeChat.sendMessageReadAck({
+				conversationId : 'test',
+				chatType : 'chat',
+				messageId : messageId
+			}, function(ret, err) {
+				if (ret.status)
+					api.alert({
+						msg : JSON.stringify(ret)
+					});
+				else
+					api.alert({
+						msg : JSON.stringify(err)
+					});
+			});
+		};
+		function fnAddMessageListener() {
+			var easeChat = api.require('easeChat');
+			easeChat.addMessageListener({
+				name : 'receive'
+			}, function(ret) {
+				api.alert({
+					msg : 'receive：' + JSON.stringify(ret)
+				});
+				api.alert({
+					msg : 'receive：' + JSON.stringify(err)
+				});
+			});
+			easeChat.addMessageListener({
+				name : 'cmdReceive'
+			}, function(ret) {
+				api.alert({
+					msg : 'cmdReceive：' + JSON.stringify(ret)
+				});
+				api.alert({
+					msg : 'cmdReceive：' + JSON.stringify(err)
+				});
+			});
+			easeChat.addMessageListener({
+				name : 'read'
+			}, function(ret) {
+				api.alert({
+					msg : 'read：' + JSON.stringify(ret)
+				});
+				api.alert({
+					msg : 'read：' + JSON.stringify(err)
+				});
+			});
+			easeChat.addMessageListener({
+				name : 'deliver'
+			}, function(ret) {
+				api.alert({
+					msg : 'deliver：' + JSON.stringify(ret)
+				});
+				api.alert({
+					msg : 'deliver：' + JSON.stringify(err)
+				});
+			});
+			easeChat.addMessageListener({
+				name : 'msgChange'
+			}, function(ret) {
+				api.alert({
+					msg : 'msgChange：' + JSON.stringify(ret)
+				});
+				api.alert({
+					msg : 'msgChange：' + JSON.stringify(err)
+				});
+			});
+			easeChat.addMessageListener({
+				name : 'msgAttachmentChange'
+			}, function(ret) {
+				api.alert({
+					msg : 'msgAttachmentChange：' + JSON.stringify(ret)
+				});
+				api.alert({
+					msg : 'msgAttachmentChange：' + JSON.stringify(err)
+				});
+			});
+			easeChat.addMessageListener({
+				name : 'conversationListDidUpdate'
+			}, function(ret) {
+				api.alert({
+					msg : 'conversationListDidUpdate：' + JSON.stringify(ret)
+				});
+				api.alert({
+					msg : 'conversationListDidUpdate：' + JSON.stringify(err)
+				});
+			});
+		};
+		function fnRemoveMessageListener() {
+			var easeChat = api.require('easeChat');
+			easeChat.addMessageListener({
+				name : 'receive'
+			});
+		};
+	</script>
+</html>

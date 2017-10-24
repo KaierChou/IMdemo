@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget id="A6053300195291" version="0.0.1">
+	<name>easeChat-Example</name>
+	<description/>
+	<author email="qa1@apicloud.com" href="http://www.apicloud.com">技术支持-F</author>
+	<content src="index.html"/>
+	<preference name="pageBounce" value="false"/>
+	<preference name="appBackground" value="rgba(0,0,0,0.0)"/>
+	<preference name="windowBackground" value="rgba(0,0,0,0.0)"/>
+	<preference name="frameBackgroundColor" value="rgba(0,0,0,0.0)"/>
+	<preference name="hScrollBarEnabled" value="true"/>
+	<preference name="vScrollBarEnabled" value="true"/>
+	<preference name="autoLaunch" value="true"/>
+	<preference name="fullScreen" value="false"/>
+	<preference name="autoUpdate" value="true"/>
+	<preference name="smartUpdate" value="false"/>
+	<preference name="debug" value="false"/>
+	<preference name="statusBarAppearance" value="true"/>
+	<meta-data name="EASEMOB_APPKEY" value="1430171024061585#kefuchannelapp49000"/>
+	<!--环信Androidkey,请填写自己的appKey后使用-->
+	<permission name="readPhoneState"/>
+	<permission name="camera"/>
+	<permission name="record"/>
+	<permission name="location"/>
+	<permission name="fileSystem"/>
+	<permission name="internet"/>
+	<permission name="bootCompleted"/>
+	<permission name="hardware"/>
+	<access origin="*"/>
+	<feature name="easeChat">
+		<param name="appKey" value="1430171024061585#kefuchannelapp49000"/>
+		<!--环信iOSkey,请填写自己的appKey后使用-->
+		<param name="ios_apnsCertName" value="81qz3dBYB5q2nGji4IYrawr1"/>
+	</feature>
+</widget>
